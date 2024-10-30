@@ -1,62 +1,52 @@
-import gpiozero as GPIO
+import gpiod
+import time
 
-GPIO.setwarnings(False)
+chip = gpiod.Chip('/dev/gpiochip0')
 
-in1=17
-in2=27
-en_a=4
+in1_line = chip.get_line(17)#PIN NUM
+in2_line = chip.get_line(27)#PIN NUM
+in3_line = chip.get_line(23)#PIN NUM
+in4_line = chip.get_line(24)#PIN NUM
 
+in1_line.request(consumer='motor_control', type=gpiod.LINE_REQ_DIR_OUT)
+in2_line.request(consumer='motor_control', type=gpiod.LINE_REQ_DIR_OUT)
+in3_line.request(consumer='motor_control', type=gpiod.LINE_REQ_DIR_OUT)
+in4_line.request(consumer='motor_control', type=gpiod.LINE_REQ_DIR_OUT)
 
-GPIO.setmode(GPIO.BCM)
+def motor_forward():
+    in1_line.set_value(1)
+    in3_line.set_value(1)
+    in2_line.set_value(0)
+    in4_line.set_value(0)
 
-GPIO.setup(in1,GPIO.OUT)
-GPIO.setup(in2,GPIO.OUT)
-GPIO.setup(en_a,GPIO.OUT)
+def motor_backward():
+    in1_line.set_value(0)
+    in3_line.set_value(0)
+    in2_line.set_value(1)
+    in4_line.set_value(1)
 
-power_a=GPIO.PWM(en_a,GPIO.OUT)
-power_a.start(50)
-
-GPIO.output(in1,GPIO.LOW)
-GPIO.output(in2,GPIO.LOW)
-
+def motor_stop():
+    in1_line.set_value(0)
+    in2_line.set_value(0)
+    in3_line.set_value(0)
+    in4_line.set_value(0)
 
 try:
-# Create Infinite loop to read user input
-   while(True):
-      # Get user Input
-      user_input = input()
-
-      # To see users input
-      # print(user_input)
-
-      if user_input == 'w':
-        GPIO.output(in1,GPIO.HIGH)
-        GPIO.output(in2,GPIO.LOW)
-        print("Forward")
-
-      elif user_input == 's':
-        GPIO.output(in1,GPIO.LOW)
-        GPIO.output(in2,GPIO.HIGH)
-        print('Back')
-
-      elif user_input == 'd':
-        GPIO.output(in1,GPIO.LOW)
-        GPIO.output(in2,GPIO.HIGH)
-        print('Right')
-
-      elif user_input == 'a':
-         GPIO.output(in1,GPIO.HIGH)
-         GPIO.output(in2,GPIO.LOW)
-         print('Left')
-
-      # Press 'c' to exit the script
-      elif user_input == 'c':
-         GPIO.output(in1,GPIO.LOW)
-         GPIO.output(in2,GPIO.LOW)
-         print('Stop')
-
-# If user press CTRL-C
+    while True:
+        char=input("enter 'a' for forward or 'z' for backwards")
+        if char=='a':
+            motor_forward()
+        elif char=='z':
+            motor_backward()
+        
+        
 except KeyboardInterrupt:
-  # Reset GPIO settings
-  GPIO.cleanup()
-  print("GPIO Clean up")
+    motor_stop()
+    time.sleep(2)
+    print("Program stopped.")
+
+finally:
+    in1_line.release()
+    in2_line.release()
+    in3_line.release()
+    in4_line.release()
