@@ -2,8 +2,8 @@ import lgpio as GPIO
 import time
 
 # Set pins
-TRIG = 23  # Associate pin 23 to TRIG
-ECHO = 24  # Associate pin 24 to ECHO
+TRIG = 5  # Associate pin 5 to TRIG
+ECHO = 6  # Associate pin 6 to ECHO
 
 # Open the GPIO chip and set the GPIO direction
 h = GPIO.gpiochip_open(0)
