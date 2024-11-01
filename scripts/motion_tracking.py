@@ -1,3 +1,4 @@
+# mpu6050 GY-521 Module
 import mpu6050
 import time
 
