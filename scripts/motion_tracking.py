@@ -1,4 +1,7 @@
 # mpu6050 GY-521 Module
+# right-hand rule. from inputs to chip(is postive  x-axis)
+# gyroscrope computes the change in angular velocity
+# accelerometer computes acceleration(rate of change in velocity) 
 import mpu6050
 import time
 
